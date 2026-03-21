@@ -7,7 +7,6 @@ import (
 	"github.com/nnno/my-raindrop-io-mcp-server/internal/domain/repository"
 )
 
-
 type CollectionUsecase struct {
 	repo repository.CollectionRepository
 }

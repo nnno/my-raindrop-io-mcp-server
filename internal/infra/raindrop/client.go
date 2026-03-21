@@ -58,7 +58,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body io.Rea
 	if err != nil {
 		return nil, fmt.Errorf("executing request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Read up to maxResponseBytes + 1 to detect truncation
 	limited := io.LimitReader(resp.Body, maxResponseBytes+1)
