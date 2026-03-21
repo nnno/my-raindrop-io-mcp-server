@@ -1,1 +1,98 @@
-# my-raindrop-io-mcp-server
+# Raindrop.io MCP Server
+
+[Raindrop.io](https://raindrop.io) のブックマークを操作する [Model Context Protocol (MCP)](https://modelcontextprotocol.io) サーバー。Go で実装。
+
+## 提供ツール
+
+| ツール | 説明 | アノテーション |
+|--------|------|----------------|
+| `search_bookmarks` | ブックマークを検索 | ReadOnly |
+| `get_bookmark` | ID を指定して詳細取得 | ReadOnly |
+| `create_bookmark` | 新しいブックマークを作成 | — |
+| `update_bookmark` | 既存のブックマークを更新 | — |
+| `delete_bookmark` | ブックマークを削除 | Destructive |
+| `list_collections` | コレクション一覧を取得 | ReadOnly |
+
+## セットアップ
+
+### 前提条件
+
+- Go 1.25+
+- [Raindrop.io のテストトークン](https://developer.raindrop.io/v1/authentication/token)
+
+### インストール
+
+`~/.local/bin/` にビルド・配置する:
+
+```sh
+GOBIN=~/.local/bin go install .
+```
+
+### MCP クライアントへの設定
+
+Claude Desktop (`claude_desktop_config.json`) の場合:
+
+```json
+{
+  "mcpServers": {
+    "raindrop": {
+      "command": "~/.local/bin/my-raindrop-io-mcp-server",
+      "env": {
+        "RAINDROP_TOKEN": "your-test-token"
+      }
+    }
+  }
+}
+```
+
+Claude Code の場合:
+
+```sh
+claude mcp add raindrop ~/.local/bin/my-raindrop-io-mcp-server -e RAINDROP_TOKEN=your-test-token
+```
+
+## アーキテクチャ
+
+DDD ベースのレイヤードアーキテクチャを採用。
+
+```
+main.go                          # エントリポイント（DI・stdio 起動）
+internal/
+├── domain/
+│   ├── entity/                  # Bookmark, Collection, DomainError
+│   └── repository/              # インターフェース定義
+│       └── mock/                # mockgen 生成
+├── application/
+│   └── usecase/                 # バリデーション・ビジネスロジック
+├── infra/
+│   └── raindrop/                # Raindrop.io REST API クライアント
+└── handler/                     # MCP ツール登録・リクエスト変換
+```
+
+依存方向: `handler → usecase → domain/entity + domain/repository ← infra/raindrop`
+
+## 開発
+
+### テスト
+
+```sh
+go test ./...
+```
+
+### モック再生成
+
+```sh
+go run go.uber.org/mock/mockgen@latest \
+  -source=internal/domain/repository/bookmark.go \
+  -destination=internal/domain/repository/mock/bookmark_mock.go \
+  -package=mock
+
+go run go.uber.org/mock/mockgen@latest \
+  -source=internal/domain/repository/collection.go \
+  -destination=internal/domain/repository/mock/collection_mock.go \
+  -package=mock
+```
+
+## ライセンス
+
+MIT
