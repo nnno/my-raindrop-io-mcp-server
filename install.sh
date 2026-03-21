@@ -42,18 +42,48 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
-URL="https://github.com/${REPO}/releases/download/v${VERSION}/${BINARY}_${VERSION}_${OS}_${ARCH}.tar.gz"
+FILENAME="${BINARY}_${VERSION}_${OS}_${ARCH}.tar.gz"
+URL="https://github.com/${REPO}/releases/download/v${VERSION}/${FILENAME}"
+CHECKSUMS_URL="https://github.com/${REPO}/releases/download/v${VERSION}/checksums.txt"
 
 echo "Downloading ${BINARY} v${VERSION} (${OS}/${ARCH})..."
 
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
+# Download archive and checksums
 if command -v curl >/dev/null 2>&1; then
-  curl -fsSL "$URL" | tar xz -C "$TMPDIR" "$BINARY"
+  curl -fsSL "$URL" -o "$TMPDIR/$FILENAME"
+  curl -fsSL "$CHECKSUMS_URL" -o "$TMPDIR/checksums.txt"
 else
-  wget -qO- "$URL" | tar xz -C "$TMPDIR" "$BINARY"
+  wget -qO "$TMPDIR/$FILENAME" "$URL"
+  wget -qO "$TMPDIR/checksums.txt" "$CHECKSUMS_URL"
 fi
+
+# Verify checksum
+EXPECTED=$(grep "  ${FILENAME}$" "$TMPDIR/checksums.txt" | awk '{print $1}')
+if [ -z "$EXPECTED" ]; then
+  echo "Checksum entry not found for ${FILENAME}" >&2
+  exit 1
+fi
+
+if command -v sha256sum >/dev/null 2>&1; then
+  ACTUAL=$(sha256sum "$TMPDIR/$FILENAME" | awk '{print $1}')
+elif command -v shasum >/dev/null 2>&1; then
+  ACTUAL=$(shasum -a 256 "$TMPDIR/$FILENAME" | awk '{print $1}')
+else
+  echo "sha256sum or shasum is required for checksum verification" >&2
+  exit 1
+fi
+
+if [ "$EXPECTED" != "$ACTUAL" ]; then
+  echo "Checksum verification failed" >&2
+  echo "  expected: $EXPECTED" >&2
+  echo "  actual:   $ACTUAL" >&2
+  exit 1
+fi
+
+tar xzf "$TMPDIR/$FILENAME" -C "$TMPDIR" "$BINARY"
 
 mkdir -p "$INSTALL_DIR"
 mv "$TMPDIR/$BINARY" "$INSTALL_DIR/$BINARY"
