@@ -9,9 +9,12 @@ linters:
     - gosimple
     - ineffassign
     - misspell
-    - gofmt
-    - goimports
 
   settings:
     misspell:
       locale: US
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
