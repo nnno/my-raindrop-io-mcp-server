@@ -28,12 +28,23 @@
 
 ### 前提条件
 
-- Go 1.25+
 - [Raindrop.io のテストトークン](https://developer.raindrop.io/v1/authentication/token)
 
 ### インストール
 
-`~/.local/bin/` にビルド・配置する:
+インストールスクリプト（`~/.local/bin/` に配置）:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/nnno/my-raindrop-io-mcp-server/main/install.sh | sh
+```
+
+Go ユーザーの場合（Go 1.25+ が必要）:
+
+```sh
+go install github.com/nnno/my-raindrop-io-mcp-server@latest
+```
+
+ソースからビルドする場合（Go 1.25+ が必要）:
 
 ```sh
 make install
