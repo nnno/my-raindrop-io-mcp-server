@@ -1,5 +1,7 @@
 # Raindrop.io MCP Server
 
+[![CI](https://github.com/nnno/my-raindrop-io-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/nnno/my-raindrop-io-mcp-server/actions/workflows/ci.yml)
+
 [Raindrop.io](https://raindrop.io) のブックマークを操作する [Model Context Protocol (MCP)](https://modelcontextprotocol.io) サーバー。Go で実装。
 
 ## 提供ツール
@@ -34,7 +36,7 @@
 `~/.local/bin/` にビルド・配置する:
 
 ```sh
-GOBIN=~/.local/bin go install .
+make install
 ```
 
 ### MCP クライアントへの設定
@@ -82,24 +84,12 @@ internal/
 
 ## 開発
 
-### テスト
-
 ```sh
-go test ./...
-```
-
-### モック再生成
-
-```sh
-go run go.uber.org/mock/mockgen@latest \
-  -source=internal/domain/repository/bookmark.go \
-  -destination=internal/domain/repository/mock/bookmark_mock.go \
-  -package=mock
-
-go run go.uber.org/mock/mockgen@latest \
-  -source=internal/domain/repository/collection.go \
-  -destination=internal/domain/repository/mock/collection_mock.go \
-  -package=mock
+make build       # ビルド（バージョン情報を埋め込み）
+make test        # テスト
+make test-race   # テスト（レース検出付き）
+make lint        # リント
+make mock        # モック再生成
 ```
 
 ## ライセンス

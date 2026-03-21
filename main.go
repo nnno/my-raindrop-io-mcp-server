@@ -11,6 +11,8 @@ import (
 	"github.com/nnno/my-raindrop-io-mcp-server/internal/infra/raindrop"
 )
 
+var version = "dev"
+
 func main() {
 	token := os.Getenv("RAINDROP_TOKEN")
 	if token == "" {
@@ -24,7 +26,7 @@ func main() {
 	bu := usecase.NewBookmarkUsecase(bookmarkRepo)
 	cu := usecase.NewCollectionUsecase(collectionRepo)
 
-	s := server.NewMCPServer("raindrop", "0.1.0")
+	s := server.NewMCPServer("raindrop", version)
 	handler.RegisterAll(s, bu, cu)
 
 	if err := server.ServeStdio(s); err != nil {
