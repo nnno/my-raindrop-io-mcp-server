@@ -1,3 +1,5 @@
+version: "2"
+
 linters:
   enable:
     - errcheck
@@ -10,8 +12,9 @@ linters:
     - gofmt
     - goimports
 
-linters-settings:
-  misspell:
-    locale: US
-  goimports:
-    local-prefixes: github.com/nnno/my-raindrop-io-mcp-server
+  settings:
+    misspell:
+      locale: US
+    goimports:
+      local-prefixes:
+        - github.com/nnno/my-raindrop-io-mcp-server
