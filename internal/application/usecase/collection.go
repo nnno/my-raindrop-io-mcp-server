@@ -8,7 +8,6 @@ import (
 )
 
 
-
 type CollectionUsecase struct {
 	repo repository.CollectionRepository
 }

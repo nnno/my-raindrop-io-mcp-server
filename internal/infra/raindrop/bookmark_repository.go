@@ -78,7 +78,7 @@ func (ab *apiBookmark) toEntity() entity.Bookmark {
 		Created:      parseTime(ab.Created),
 		LastUpdate:   parseTime(ab.LastUpdate),
 		CollectionID: ab.Collection.ID,
-		Highlights: toHighlights(ab.Highlights),
+		Highlights:   toHighlights(ab.Highlights),
 	}
 }
 

@@ -79,12 +79,12 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body io.Rea
 
 func classifyHTTPError(status int, body []byte) *entity.DomainError {
 	msg := fmt.Sprintf("API error (status %d): %s", status, string(body))
-	switch {
-	case status == http.StatusNotFound:
+	switch status {
+	case http.StatusNotFound:
 		return &entity.DomainError{Kind: entity.ErrNotFound, Message: msg}
-	case status == http.StatusUnauthorized || status == http.StatusForbidden:
+	case http.StatusUnauthorized, http.StatusForbidden:
 		return &entity.DomainError{Kind: entity.ErrUnauthorized, Message: msg}
-	case status == http.StatusTooManyRequests:
+	case http.StatusTooManyRequests:
 		return &entity.DomainError{Kind: entity.ErrRateLimited, Message: msg}
 	default:
 		return &entity.DomainError{Kind: entity.ErrInternal, Message: msg}
