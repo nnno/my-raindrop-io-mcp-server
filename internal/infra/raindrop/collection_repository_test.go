@@ -36,7 +36,7 @@ func TestCollectionRepository_List(t *testing.T) {
 					},
 				},
 			}
-			json.NewEncoder(w).Encode(resp)
+			require.NoError(t, json.NewEncoder(w).Encode(resp))
 		case "/collections/childrens":
 			resp := map[string]any{
 				"items": []map[string]any{
@@ -48,7 +48,7 @@ func TestCollectionRepository_List(t *testing.T) {
 					},
 				},
 			}
-			json.NewEncoder(w).Encode(resp)
+			require.NoError(t, json.NewEncoder(w).Encode(resp))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -69,7 +69,7 @@ func TestCollectionRepository_List(t *testing.T) {
 func TestCollectionRepository_List_RootError(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error":"server error"}`))
+		_, _ = w.Write([]byte(`{"error":"server error"}`))
 	})
 
 	repo := raindrop.NewCollectionRepository(client)

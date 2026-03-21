@@ -48,7 +48,7 @@ func TestBookmarkRepository_Search(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -86,7 +86,7 @@ func TestBookmarkRepository_Get(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -110,7 +110,7 @@ func TestBookmarkRepository_Create(t *testing.T) {
 
 		body, _ := io.ReadAll(r.Body)
 		var reqBody map[string]any
-		json.Unmarshal(body, &reqBody)
+		require.NoError(t, json.Unmarshal(body, &reqBody))
 		assert.Equal(t, "https://example.com", reqBody["link"])
 		assert.Equal(t, "Example", reqBody["title"])
 		assert.Equal(t, []any{"test"}, reqBody["tags"])
@@ -131,7 +131,7 @@ func TestBookmarkRepository_Create(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -150,7 +150,7 @@ func TestBookmarkRepository_CreateWithCollection(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		var reqBody map[string]any
-		json.Unmarshal(body, &reqBody)
+		require.NoError(t, json.Unmarshal(body, &reqBody))
 		assert.Equal(t, "https://example.com", reqBody["link"])
 		col := reqBody["collection"].(map[string]any)
 		assert.Equal(t, float64(10), col["$id"])
@@ -171,7 +171,7 @@ func TestBookmarkRepository_CreateWithCollection(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -191,7 +191,7 @@ func TestBookmarkRepository_Update(t *testing.T) {
 
 		body, _ := io.ReadAll(r.Body)
 		var reqBody map[string]any
-		json.Unmarshal(body, &reqBody)
+		require.NoError(t, json.Unmarshal(body, &reqBody))
 		assert.Equal(t, "Updated", reqBody["title"])
 
 		resp := map[string]any{
@@ -210,7 +210,7 @@ func TestBookmarkRepository_Update(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -225,7 +225,7 @@ func TestBookmarkRepository_UpdateWithTagsAndCollection(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		var reqBody map[string]any
-		json.Unmarshal(body, &reqBody)
+		require.NoError(t, json.Unmarshal(body, &reqBody))
 		assert.Equal(t, []any{"go", "mcp"}, reqBody["tags"])
 		col := reqBody["collection"].(map[string]any)
 		assert.Equal(t, float64(7), col["$id"])
@@ -246,7 +246,7 @@ func TestBookmarkRepository_UpdateWithTagsAndCollection(t *testing.T) {
 			},
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		require.NoError(t, json.NewEncoder(w).Encode(resp))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -265,7 +265,7 @@ func TestBookmarkRepository_UpdateWithTagsAndCollection(t *testing.T) {
 func TestBookmarkRepository_APIError(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"errorMessage":"Unauthorized"}`))
+		_, _ = w.Write([]byte(`{"errorMessage":"Unauthorized"}`))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -284,7 +284,7 @@ func TestBookmarkRepository_Delete(t *testing.T) {
 		assert.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"result":true}`))
+		_, _ = w.Write([]byte(`{"result":true}`))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
@@ -296,7 +296,7 @@ func TestBookmarkRepository_Delete(t *testing.T) {
 func TestBookmarkRepository_Delete_Error(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"errorMessage":"not found"}`))
+		_, _ = w.Write([]byte(`{"errorMessage":"not found"}`))
 	})
 
 	repo := raindrop.NewBookmarkRepository(client)
