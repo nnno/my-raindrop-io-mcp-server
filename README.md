@@ -4,6 +4,8 @@
 
 ## 提供ツール
 
+### ブックマーク
+
 | ツール | 説明 | アノテーション |
 |--------|------|----------------|
 | `search_bookmarks` | ブックマークを検索 | ReadOnly |
@@ -11,7 +13,14 @@
 | `create_bookmark` | 新しいブックマークを作成 | — |
 | `update_bookmark` | 既存のブックマークを更新 | — |
 | `delete_bookmark` | ブックマークを削除 | Destructive |
+
+### コレクション
+
+| ツール | 説明 | アノテーション |
+|--------|------|----------------|
 | `list_collections` | コレクション一覧を取得 | ReadOnly |
+| `create_collection` | 新しいコレクションを作成 | — |
+| `update_collection` | 既存のコレクションを更新 | — |
 
 ## セットアップ
 
@@ -61,7 +70,7 @@ internal/
 ├── domain/
 │   ├── entity/                  # Bookmark, Collection, DomainError
 │   └── repository/              # インターフェース定義
-│       └── mock/                # mockgen 生成
+│       └── mock/                # mockgen 生成モック
 ├── application/
 │   └── usecase/                 # バリデーション・ビジネスロジック
 ├── infra/
@@ -69,7 +78,7 @@ internal/
 └── handler/                     # MCP ツール登録・リクエスト変換
 ```
 
-依存方向: `handler → usecase → domain/entity + domain/repository ← infra/raindrop`
+依存方向: `handler → usecase → (domain/entity + domain/repository) ← infra/raindrop`
 
 ## 開発
 
