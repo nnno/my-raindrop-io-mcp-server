@@ -15,6 +15,3 @@ linters:
   settings:
     misspell:
       locale: US
-    goimports:
-      local-prefixes:
-        - github.com/nnno/my-raindrop-io-mcp-server
